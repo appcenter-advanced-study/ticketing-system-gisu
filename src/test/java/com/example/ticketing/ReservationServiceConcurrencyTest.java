@@ -23,19 +23,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ReservationServiceConcurrencyTest {
 
-    @Autowired
-    private ReservationService reservationService;
-
-    @Autowired
-    private TicketRepository ticketRepository;
-
-    @Autowired
-    private TicketStockRepository ticketStockRepository;
-
-    @Autowired
-    private ReservationRepository reservationRepository;
+    @Autowired private ReservationService reservationService;
+    @Autowired private TicketRepository ticketRepository;
+    @Autowired private TicketStockRepository ticketStockRepository;
+    @Autowired private ReservationRepository reservationRepository;
 
     private static final int THREAD_COUNT = 10;
+    private static final int INITIAL_STOCK = 10;
     private Ticket ticket;
 
     @BeforeEach
@@ -45,7 +39,7 @@ class ReservationServiceConcurrencyTest {
         ticketRepository.deleteAll();
 
         ticket = ticketRepository.save(new Ticket("Romeo And Juliet"));
-        TicketStock stock = new TicketStock(10, ticket); // 재고 10개
+        TicketStock stock = new TicketStock(INITIAL_STOCK, ticket);
         ticketStockRepository.save(stock);
     }
 
@@ -68,24 +62,39 @@ class ReservationServiceConcurrencyTest {
         }
 
         latch.await();
+        executorService.shutdown();
 
         long reservationCount = reservationRepository.count();
         int remainingStock = ticketStockRepository.findByTicketId(ticket.getId())
                 .orElseThrow(() -> new RuntimeException("티켓 재고 없음"))
                 .getQuantity();
 
-        System.out.println(" 동시성 테스트 결과");
+        int totalUsed = (int) reservationCount + remainingStock;
+
+        System.out.println("\n 동시성 테스트 결과");
+        System.out.println("초기 티켓 수: " + INITIAL_STOCK);
         System.out.println("총 예약된 수: " + reservationCount);
         System.out.println("남은 재고: " + remainingStock);
+        System.out.println("예약 + 재고 총합: " + totalUsed);
 
-        try {
-            assertThat(reservationCount).isLessThanOrEqualTo(10);
-            assertThat(remainingStock).isGreaterThanOrEqualTo(0);
-            System.out.println(" 정합성 문제 없음 (락이 적용된 경우 등)");
-        } catch (AssertionError e) {
-            System.out.println(" 동시성 문제 발생 확인됨 → 정합성 깨짐");
-            System.out.println("   기대 재고 이하 예약이어야 하나 " + reservationCount + "건 예약됨");
-            // 테스트는 실패로 처리하지 않음
+        boolean consistencyViolation = false;
+
+        if (reservationCount == INITIAL_STOCK && remainingStock == 0) {
+            System.out.println("테스트 성공: 정합성 유지 (재고 0, 예약 수 = 초기 수)");
+        } else {
+            System.out.println(" 동시성 문제 발생 가능성 있음");
+            if (reservationCount > INITIAL_STOCK) {
+                System.out.println("예약이 초과되었습니다!");
+                consistencyViolation = true;
+            }
+            if (totalUsed != INITIAL_STOCK) {
+                System.out.println("예약 + 재고 합이 초기 재고와 다릅니다!");
+                consistencyViolation = true;
+            }
+        }
+
+        if (consistencyViolation) {
+            fail("정합성 검증 실패: 동시성 문제로 인한 데이터 불일치 발생");
         }
     }
 }
