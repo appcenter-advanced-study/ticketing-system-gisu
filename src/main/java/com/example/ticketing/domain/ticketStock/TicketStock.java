@@ -32,9 +32,7 @@ public class TicketStock extends BaseEntity {
     }
 
     public void decreaseQuantity() {
-        log.info(" 재고 감소 전: {}", this.quantity);
         this.quantity = this.quantity - 1;
-        log.info(" 재고 감소 후: {}", this.quantity);
     }
 
 }
