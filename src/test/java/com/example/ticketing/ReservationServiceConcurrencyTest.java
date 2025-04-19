@@ -2,6 +2,7 @@ package com.example.ticketing;
 
 import com.example.ticketing.domain.reservation.ReservationRepository;
 import com.example.ticketing.domain.reservation.ReservationService;
+import com.example.ticketing.domain.reservation.RetryableReservationService;
 import com.example.ticketing.domain.ticket.Ticket;
 import com.example.ticketing.domain.ticket.TicketRepository;
 import com.example.ticketing.domain.ticketStock.TicketStock;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -27,16 +30,18 @@ class ReservationServiceConcurrencyTest {
     @Autowired private TicketRepository ticketRepository;
     @Autowired private TicketStockRepository ticketStockRepository;
     @Autowired private ReservationRepository reservationRepository;
+    @Autowired private RetryableReservationService retryableReservationService;
 
     private static final int THREAD_COUNT = 10;
     private static final int INITIAL_STOCK = 10;
     private Ticket ticket;
 
     @BeforeEach
+    @Transactional
     void setUp() {
-        reservationRepository.deleteAll();
-        ticketStockRepository.deleteAll();
-        ticketRepository.deleteAll();
+        reservationRepository.deleteAllInBatch();
+        ticketStockRepository.deleteAllInBatch();
+        ticketRepository.deleteAllInBatch();
 
         ticket = ticketRepository.save(new Ticket("Romeo And Juliet"));
         TicketStock stock = new TicketStock(INITIAL_STOCK, ticket);
@@ -96,5 +101,63 @@ class ReservationServiceConcurrencyTest {
         if (consistencyViolation) {
             fail("정합성 검증 실패: 동시성 문제로 인한 데이터 불일치 발생");
         }
+    }
+
+    @Test
+    void 낙관적락_재시도전략_정합성_테스트() throws InterruptedException {
+        ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
+        CountDownLatch latch = new CountDownLatch(THREAD_COUNT);
+
+        for (int i = 0; i < THREAD_COUNT; i++) {
+            int finalI = i;
+            executorService.submit(() -> {
+                try {
+                    retryableReservationService.reserveWithRetry(ticket.getId(), "user" + finalI);
+                } catch (Exception e) {
+                    // 재고 부족 혹은 최대 재시도 실패 등 예외 무시
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+        executorService.shutdown();
+
+        long reservationCount = reservationRepository.count();
+        int remainingStock = ticketStockRepository.findByTicketId(ticket.getId())
+                .orElseThrow(() -> new RuntimeException("티켓 재고 없음"))
+                .getQuantity();
+
+        int totalUsed = (int) reservationCount + remainingStock;
+
+        System.out.println("\n 낙관적 락 테스트 결과");
+        System.out.println("초기 티켓 수: " + INITIAL_STOCK);
+        System.out.println("총 예약된 수: " + reservationCount);
+        System.out.println("남은 재고: " + remainingStock);
+        System.out.println("예약 + 재고 총합: " + totalUsed);
+
+        boolean consistencyViolation = false;
+
+        if (reservationCount == INITIAL_STOCK && remainingStock == 0) {
+            System.out.println("테스트 성공: 정합성 유지 (재고 0, 예약 수 = 초기 수)");
+        } else {
+            System.out.println(" 동시성 문제 발생 가능성 있음");
+            if (reservationCount > INITIAL_STOCK) {
+                System.out.println("예약이 초과되었습니다!");
+                consistencyViolation = true;
+            }
+            if (totalUsed != INITIAL_STOCK) {
+                System.out.println("예약 + 재고 합이 초기 재고와 다릅니다!");
+                consistencyViolation = true;
+            }
+        }
+
+        if (consistencyViolation) {
+            fail("정합성 검증 실패: 동시성 문제로 인한 데이터 불일치 발생");
+        }
+
+        assertThat(reservationCount).isLessThanOrEqualTo(INITIAL_STOCK);
+        assertThat(remainingStock).isGreaterThanOrEqualTo(0);
     }
 }

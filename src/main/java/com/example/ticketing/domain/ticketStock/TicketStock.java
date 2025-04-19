@@ -21,6 +21,9 @@ public class TicketStock extends BaseEntity {
 
     private Integer quantity;
 
+    @Version
+    private Long version;
+
     @OneToOne
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
