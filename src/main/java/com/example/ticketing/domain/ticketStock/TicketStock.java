@@ -7,11 +7,13 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "TicketStock")
+@Slf4j
 public class TicketStock extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,9 +32,9 @@ public class TicketStock extends BaseEntity {
     }
 
     public void decreaseQuantity() {
-        System.out.println("📉 재고 감소 전: " + this.quantity);
+        log.info(" 재고 감소 전: {}", this.quantity);
         this.quantity = this.quantity - 1;
-        System.out.println("📉 재고 감소 후: " + this.quantity);
+        log.info(" 재고 감소 후: {}", this.quantity);
     }
 
 }
