@@ -28,7 +28,7 @@ class ReservationServiceConcurrencyTest {
     @Autowired private TicketStockRepository ticketStockRepository;
     @Autowired private ReservationRepository reservationRepository;
 
-    private static final int THREAD_COUNT = 10;
+    private static final int THREAD_COUNT = 100;
     private static final int INITIAL_STOCK = 10;
     private Ticket ticket;
 

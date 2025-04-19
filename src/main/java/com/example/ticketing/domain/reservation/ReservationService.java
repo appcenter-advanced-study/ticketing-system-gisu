@@ -18,8 +18,12 @@ public class ReservationService {
 
     @Transactional
     public void reserve(Long ticketId, String username) {
-        TicketStock stock = ticketStockRepository.findByTicketId(ticketId)
+        TicketStock stock = ticketStockRepository.findByTicketIdForUpdate(ticketId)
                 .orElseThrow(() -> new RuntimeException("해당 티켓의 재고 정보가 없습니다."));
+
+        if (stock.getQuantity() <= 0) {
+            throw new RuntimeException("재고가 부족합니다.");
+        }
 
         // 재고 감소
         stock.decreaseQuantity();
