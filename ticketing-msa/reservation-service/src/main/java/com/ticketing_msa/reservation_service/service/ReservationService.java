@@ -1,5 +1,6 @@
 package com.ticketing_msa.reservation_service.service;
 
+import com.ticketing_msa.reservation_service.config.TicketClient;
 import com.ticketing_msa.reservation_service.domain.Reservation;
 import com.ticketing_msa.reservation_service.dto.request.GenerateReservationRequest;
 import com.ticketing_msa.reservation_service.dto.response.ReservationResponse;
@@ -16,6 +17,7 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final TicketClient ticketClient;
 
     public void generateReservation(GenerateReservationRequest request) {
         Reservation reservation = new Reservation(request.username(), request.ticketId());
