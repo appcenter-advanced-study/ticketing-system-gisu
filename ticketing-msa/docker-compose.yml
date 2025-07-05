@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  discovery-service:
+    build:
+      context: ./discovery-service
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    networks:
+      - msa-network
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway
+    depends_on:
+      - discovery-service
+    ports:
+      - "8080:8080"
+    networks:
+      - msa-network
+
+  ticket-service:
+    build:
+      context: ./ticket-service
+    container_name: ticket-service
+    depends_on:
+      - discovery-service
+    ports:
+      - "8081:8081"
+    networks:
+      - msa-network
+
+  ticketstock-service:
+    build:
+      context: ./ticketStock-service
+    container_name: ticketstock-service
+    depends_on:
+      - discovery-service
+    ports:
+      - "8082:8082"
+    networks:
+      - msa-network
+
+  reservation-service:
+    build:
+      context: ./reservation-service
+    container_name: reservation-service
+    depends_on:
+      - discovery-service
+    ports:
+      - "8083:8083"
+    networks:
+      - msa-network
+
+networks:
+  msa-network:
+    driver: bridge
