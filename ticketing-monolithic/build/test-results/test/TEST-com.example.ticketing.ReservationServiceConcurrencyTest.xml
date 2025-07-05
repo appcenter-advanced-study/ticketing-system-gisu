@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ticketing.ReservationServiceConcurrencyTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-07-05T17:25:54.009Z" hostname="gimgisuui-MacBookAir.local" time="0.885">
+  <properties/>
+  <testcase name="동시예약요청_정합성문제_테스트()" classname="com.example.ticketing.ReservationServiceConcurrencyTest" time="0.885"/>
+  <system-out><![CDATA[02:25:50.955 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.example.ticketing.ReservationServiceConcurrencyTest]: ReservationServiceConcurrencyTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+02:25:51.036 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.example.ticketing.TicketingApplication for test class com.example.ticketing.ReservationServiceConcurrencyTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.4)
+
+2025-07-06T02:25:51.296+09:00  INFO 77054 --- [    Test worker] c.e.t.ReservationServiceConcurrencyTest  : Starting ReservationServiceConcurrencyTest using Java 17.0.15 with PID 77054 (started by gimgisu in /Users/gimgisu/project/ticketing/ticketing-monolithic)
+2025-07-06T02:25:51.297+09:00  INFO 77054 --- [    Test worker] c.e.t.ReservationServiceConcurrencyTest  : No active profile set, falling back to 1 default profile: "default"
+2025-07-06T02:25:51.771+09:00  INFO 77054 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-07-06T02:25:51.810+09:00  INFO 77054 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 33 ms. Found 3 JPA repository interfaces.
+2025-07-06T02:25:52.066+09:00  INFO 77054 --- [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-07-06T02:25:52.093+09:00  INFO 77054 --- [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.11.Final
+2025-07-06T02:25:52.112+09:00  INFO 77054 --- [    Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-07-06T02:25:52.287+09:00  INFO 77054 --- [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-07-06T02:25:52.309+09:00  INFO 77054 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-07-06T02:25:52.450+09:00  INFO 77054 --- [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@43b172e3
+2025-07-06T02:25:52.452+09:00  INFO 77054 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-07-06T02:25:52.514+09:00  INFO 77054 --- [    Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.40
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-07-06T02:25:53.084+09:00  INFO 77054 --- [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-07-06T02:25:53.162+09:00  INFO 77054 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-07-06T02:25:53.677+09:00  WARN 77054 --- [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-07-06T02:25:53.708+09:00  INFO 77054 --- [    Test worker] o.s.v.b.OptionalValidatorFactoryBean     : Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Bean Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2025-07-06T02:25:53.999+09:00  INFO 77054 --- [    Test worker] c.e.t.ReservationServiceConcurrencyTest  : Started ReservationServiceConcurrencyTest in 2.871 seconds (process running for 3.598)
+2025-07-06T02:25:54.542+09:00  INFO 77054 --- [ool-2-thread-10] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 전: 10
+2025-07-06T02:25:54.541+09:00  INFO 77054 --- [pool-2-thread-4] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 전: 10
+2025-07-06T02:25:54.542+09:00  INFO 77054 --- [pool-2-thread-2] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 전: 10
+2025-07-06T02:25:54.542+09:00  INFO 77054 --- [pool-2-thread-8] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 전: 10
+2025-07-06T02:25:54.542+09:00  INFO 77054 --- [pool-2-thread-1] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 전: 10
+2025-07-06T02:25:54.542+09:00  INFO 77054 --- [pool-2-thread-3] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 전: 10
+2025-07-06T02:25:54.542+09:00  INFO 77054 --- [pool-2-thread-7] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 전: 10
+2025-07-06T02:25:54.542+09:00  INFO 77054 --- [pool-2-thread-9] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 전: 10
+2025-07-06T02:25:54.543+09:00  INFO 77054 --- [pool-2-thread-7] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 후: 9
+2025-07-06T02:25:54.542+09:00  INFO 77054 --- [pool-2-thread-5] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 전: 10
+2025-07-06T02:25:54.542+09:00  INFO 77054 --- [ool-2-thread-10] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 후: 9
+2025-07-06T02:25:54.542+09:00  INFO 77054 --- [pool-2-thread-6] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 전: 10
+2025-07-06T02:25:54.542+09:00  INFO 77054 --- [pool-2-thread-4] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 후: 9
+2025-07-06T02:25:54.542+09:00  INFO 77054 --- [pool-2-thread-2] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 후: 9
+2025-07-06T02:25:54.542+09:00  INFO 77054 --- [pool-2-thread-8] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 후: 9
+2025-07-06T02:25:54.542+09:00  INFO 77054 --- [pool-2-thread-1] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 후: 9
+2025-07-06T02:25:54.542+09:00  INFO 77054 --- [pool-2-thread-3] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 후: 9
+2025-07-06T02:25:54.543+09:00  INFO 77054 --- [pool-2-thread-9] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 후: 9
+2025-07-06T02:25:54.543+09:00  INFO 77054 --- [pool-2-thread-5] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 후: 9
+2025-07-06T02:25:54.543+09:00  INFO 77054 --- [pool-2-thread-6] c.e.t.domain.ticketStock.TicketStock     :  재고 감소 후: 9
+ 동시성 테스트 결과
+총 예약된 수: 10
+남은 재고: 9
+ 정합성 문제 없음 (락이 적용된 경우 등)
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
