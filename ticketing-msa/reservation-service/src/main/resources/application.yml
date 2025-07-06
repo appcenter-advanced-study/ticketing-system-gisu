@@ -6,7 +6,7 @@ spring:
     name: reservation-service
 
   datasource:
-    url: jdbc:mysql://localhost:3308/ticketing_db
+    url: jdbc:mysql://mysql:3306/ticket_db
     username: root
     password: root
   jpa:

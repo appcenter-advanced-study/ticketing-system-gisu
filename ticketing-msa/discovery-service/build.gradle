@@ -37,3 +37,7 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+// bootJar {
+//     mainClass = 'com.ticketing_msa.discovery_service.DiscoveryServiceApplication'
+// }

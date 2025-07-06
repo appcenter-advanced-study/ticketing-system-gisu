@@ -5,10 +5,13 @@ WORKDIR /app
 # 필요한 파일만 먼저 복사 (종속성 캐시 활용)
 COPY build.gradle settings.gradle ./
 COPY gradle ./gradle
-RUN gradle build --no-daemon || return 0
+COPY gradlew ./
+
+# 종속성 다운로드 (소스 코드 없이)
+RUN gradle build --no-daemon -x test --no-build-cache || return 0
 
 # 전체 프로젝트 복사 후 빌드
-COPY src/main/java/com/ticketing_msa/ticket_service .
+COPY src ./src
 RUN gradle clean build -x test --no-daemon
 
 # 2단계: 실제 실행용 경량 이미지

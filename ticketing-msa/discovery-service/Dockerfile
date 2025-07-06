@@ -1,11 +1,11 @@
-# 1. Java 17 JDK 이미지 기반
-FROM eclipse-temurin:17-jdk-alpine as builder
-
-# 2. 작업 디렉토리 생성
+# 1단계: Gradle 빌드
+FROM gradle:8.7-jdk17 AS builder
 WORKDIR /app
+COPY . .
+RUN gradle clean build -x test --no-daemon
 
-# 3. Gradle 빌드에 필요한 파일 복사
-COPY build/libs/discovery-service-0.0.1-SNAPSHOT.jar app.jar
-
-# 4. 실행 명령
+# 2단계: 실행 이미지
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+COPY --from=builder /app/build/libs/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]

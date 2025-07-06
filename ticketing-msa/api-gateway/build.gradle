@@ -44,3 +44,8 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+
+// bootJar {
+//     mainClass = 'com.api_gateway.api_gateway.ApiGatewayApplication'
+// }

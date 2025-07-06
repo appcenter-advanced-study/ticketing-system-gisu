@@ -45,3 +45,8 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+
+// bootJar {
+//     mainClass = 'com.ticketing_msa.reservation_service.ReservationServiceApplication'
+// }

@@ -36,3 +36,7 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+// bootJar {
+//     mainClass = 'com.ticketing_msa.ticket_service.TicketServiceApplication'
+// }
