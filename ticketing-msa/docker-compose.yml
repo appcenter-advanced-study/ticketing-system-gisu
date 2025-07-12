@@ -14,7 +14,8 @@ services:
 
   discovery-service:
     build:
-      context: ./discovery-service
+      context: .
+      dockerfile: discovery-service/Dockerfile
     container_name: discovery-service
     ports:
       - "8761:8761"
@@ -23,7 +24,8 @@ services:
 
   api-gateway:
     build:
-      context: ./api-gateway
+      context: .
+      dockerfile: api-gateway/Dockerfile
     container_name: api-gateway
     depends_on:
       - discovery-service
@@ -34,7 +36,8 @@ services:
 
   ticket-service:
     build:
-      context: ./ticket-service
+      context: .
+      dockerfile: ticket-service/Dockerfile
     container_name: ticket-service
     depends_on:
       - discovery-service
@@ -45,7 +48,8 @@ services:
 
   ticketstock-service:
     build:
-      context: ./ticketStock-service
+      context: .
+      dockerfile: ticketStock-service/Dockerfile
     container_name: ticketstock-service
     depends_on:
       - discovery-service
@@ -56,7 +60,8 @@ services:
 
   reservation-service:
     build:
-      context: ./reservation-service
+      context: .
+      dockerfile: reservation-service/Dockerfile
     container_name: reservation-service
     depends_on:
       - discovery-service

@@ -13,11 +13,11 @@ public class GatewayRoutesConfig {
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("ticket-service", r -> r.path("/ticket/**")
-                        .uri("http://ticket-service:8081"))
+                        .uri("lb://ticket-service"))
                 .route("ticketStock-service", r -> r.path("/stock/**")
-                        .uri("http://ticketStock-service:8082"))
+                        .uri("lb://ticketStock-service"))
                 .route("reservation-service", r -> r.path("/reservation/**")
-                        .uri("http://reservation-service:8083"))
+                        .uri("lb://reservation-service"))
                 .build();
     }
 }
