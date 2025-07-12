@@ -25,11 +25,9 @@ public class TicketStockService {
     }
 
     public void setStockQuantity(Long ticketId, Integer quantity) {
-        TicketStock stock = getStockOrThrow(ticketId);
-        stock.setQuantity(quantity);
+        TicketStock stock = new TicketStock(ticketId, quantity);
         ticketStockRepository.save(stock);
     }
-
     public TicketStockResponse findQuantityByTicketId(Long ticketId) {
         TicketStock stock = getStockOrThrow(ticketId);
         return new TicketStockResponse(ticketId, stock.getQuantity());

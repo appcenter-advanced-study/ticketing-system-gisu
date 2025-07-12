@@ -21,9 +21,9 @@ public class TicketStock {
 
     private Long ticketId;
 
-    public TicketStock(Integer quantity, Long ticketId) {
-        this.quantity = quantity;
+    public TicketStock( Long ticketId, Integer quantity) {
         this.ticketId = ticketId;
+        this.quantity = quantity;
     }
 
     public void decrease() {
@@ -38,8 +38,5 @@ public class TicketStock {
         this.quantity++;
     }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
 }
 

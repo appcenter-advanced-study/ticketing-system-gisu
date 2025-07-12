@@ -50,7 +50,7 @@ services:
     build:
       context: .
       dockerfile: ticketStock-service/Dockerfile
-    container_name: ticketstock-service
+    container_name: stock-service
     depends_on:
       - discovery-service
     ports:
