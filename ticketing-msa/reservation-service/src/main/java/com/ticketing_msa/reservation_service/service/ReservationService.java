@@ -1,5 +1,6 @@
 package com.ticketing_msa.reservation_service.service;
 
+import com.ticketing_msa.event.dto.reservation.ReservationCanceledRequestEvent;
 import com.ticketing_msa.event.dto.reservation.ReservationRequestEvent;
 import com.ticketing_msa.reservation_service.config.StockClient;
 import com.ticketing_msa.reservation_service.config.TicketClient;
@@ -7,6 +8,7 @@ import com.ticketing_msa.reservation_service.domain.Reservation;
 import com.ticketing_msa.reservation_service.dto.request.GenerateReservationRequest;
 import com.ticketing_msa.reservation_service.dto.response.ReservationResponse;
 import com.ticketing_msa.reservation_service.dto.response.TicketResponse;
+import com.ticketing_msa.reservation_service.kafka.ReservationCanceledRequestEventProducer;
 import com.ticketing_msa.reservation_service.kafka.ReservationEventProducer;
 import com.ticketing_msa.reservation_service.repository.ReservationRepository;
 import jakarta.ws.rs.NotFoundException;
@@ -24,7 +26,7 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final TicketClient ticketClient;
-    private final StockClient stockClient;
+    private final ReservationCanceledRequestEventProducer reservationCanceledRequestEventProducer;
     private final ReservationEventProducer reservationEventProducer;
 
     @Transactional
@@ -68,10 +70,13 @@ public class ReservationService {
 
     public void deleteById(Long id) {
         log.info("[예매 삭제 요청] reservationId={}", id);
-        if (!reservationRepository.existsById(id)) {
-            log.warn("[예매 삭제 실패] 존재하지 않는 예약: reservationId={}", id);
-            throw new RuntimeException("해당 예약이 존재하지 않습니다.");
-        }
+        Reservation reservation = reservationRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("해당 예약이 존재하지 않습니다."));
+  
+        ReservationCanceledRequestEvent event = new ReservationCanceledRequestEvent(
+            reservation.getId(), reservation.getTicketId(), reservation.getUsername());
+        reservationCanceledRequestEventProducer.sendReservationCanceled(event);
+   
         reservationRepository.deleteById(id);
         log.info("[예매 삭제 완료] reservationId={}", id);
     }

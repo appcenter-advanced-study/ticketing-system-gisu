@@ -1,5 +1,6 @@
 package com.ticketing_msa.stock_service.service;
 
+import com.ticketing_msa.event.dto.reservation.ReservationCanceledRequestEvent;
 import com.ticketing_msa.event.dto.reservation.ReservationRequestEvent;
 import com.ticketing_msa.event.dto.stock.StockResultEvent;
 import com.ticketing_msa.stock_service.domain.TicketStock;
@@ -52,6 +53,25 @@ public class TicketStockService {
         stockResultEventProducer.sendStockResult(resultEvent);
         log.info("[재고 결과 이벤트 발행] ticketId={}, username={}, success={}, reason={}", event.getTicketId(), event.getUsername(), success, reason);
     }
+
+
+    public void handleReservationCancel(ReservationCanceledRequestEvent event) {
+        log.info("[예매 취소 이벤트 수신] ticketId={}, username={}", event.getTicketId(), event.getUsername());
+        String stockKey = "stock:" + event.getTicketId();
+        redisTemplate.opsForValue().increment(stockKey);
+        // DB 재고 증가
+        increaseStock(event.getTicketId());
+        // 결과 이벤트 발행
+        StockResultEvent resultEvent = StockResultEvent.builder()
+                .reservationId(event.getReservationId())
+                .ticketId(event.getTicketId())
+                .username(event.getUsername())
+                .success(true)
+                .message("CANCEL_OK")
+                .build();
+        stockResultEventProducer.sendStockResult(resultEvent);
+    }
+
 
     public void decreaseStock(Long ticketId) {
         log.info("[DB 재고 차감] ticketId={}", ticketId);

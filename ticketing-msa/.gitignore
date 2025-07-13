@@ -1,0 +1,33 @@
+# Java/Gradle
+/build/
+/.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+.gradle/
+*.log
+*.class
+*.jar
+*.war
+*.iml
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.ipr
+*.iml
+out/
+
+# OS/Editor
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+**/logs/
+*.log
+
+# 환경설정/민감정보
+.env
+.env.*
+
+# 기타
+node_modules/ 
